@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ref Ledger — 2025-26 Season</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#F2EFE9;
+    --ink-dim:#B9B4A9;
+    --court:#15130F;
+    --panel:#1D1A15;
+    --panel-2:#242019;
+    --line: rgba(242,239,233,0.10);
+    --line-strong: rgba(242,239,233,0.18);
+    --amber:#C4762B;
+    --amber-bright:#E8944A;
+    --whistle:#C9C2B3;
+    --good:#7FA875;
+    --bad:#C25A4E;
+    --radius: 3px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 2px, transparent 2px, transparent 14px),
+      var(--court);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding-bottom:64px;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px;}
+
+  /* ---------- Scoreboard header ---------- */
+  header.board{
+    border-bottom:1px solid var(--line-strong);
+    background:linear-gradient(180deg, #1a1712 0%, #141210 100%);
+    padding:28px 0 22px;
+  }
+  .board-top{
+    display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    margin-bottom:22px;
+  }
+  .board-title{
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    letter-spacing:0.04em;
+    font-size:26px;
+    text-transform:uppercase;
+    color:var(--ink);
+  }
+  .board-title span{color:var(--amber-bright);}
+  .board-sub{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--ink-dim);
+    letter-spacing:0.03em;
+  }
+  .stat-row{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  .stat{
+    background:var(--panel);
+    padding:14px 16px;
+    position:relative;
+  }
+  .stat .label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.09em;
+    color:var(--ink-dim);
+    margin-bottom:6px;
+  }
+  .stat .value{
+    font-family:'Oswald',sans-serif;
+    font-size:28px;
+    font-weight:600;
+    font-variant-numeric:tabular-nums;
+    color:var(--ink);
+    line-height:1;
+  }
+  .stat .value.amber{color:var(--amber-bright);}
+  .stat .value.good{color:var(--good);}
+  .stat .value.bad{color:var(--bad);}
+  .stat .sub{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-dim);
+    margin-top:4px;
+  }
+
+  /* ---------- Tabs ---------- */
+  nav.tabs{
+    display:flex; gap:2px;
+    border-bottom:1px solid var(--line-strong);
+    background:var(--panel);
+    position:sticky; top:0; z-index:10;
+  }
+  nav.tabs button{
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink-dim);
+    background:none;
+    border:none;
+    padding:14px 18px;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    transition:color .15s, border-color .15s;
+  }
+  nav.tabs button:hover{color:var(--ink);}
+  nav.tabs button.active{color:var(--amber-bright);border-bottom-color:var(--amber);}
+
+  main{padding-top:24px;}
+  section.tab{display:none;}
+  section.tab.active{display:block;}
+
+  h2.section-title{
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    font-size:16px;
+    font-weight:600;
+    color:var(--ink);
+    margin:0 0 14px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .hint{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-dim);font-weight:400;text-transform:none;letter-spacing:0;}
+
+  /* ---------- Card / form ---------- */
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+    margin-bottom:20px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:14px;
+  }
+  label{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--ink-dim);
+    margin-bottom:6px;
+  }
+  input[type=text], input[type=date], input[type=number], select, textarea{
+    width:100%;
+    background:var(--panel-2);
+    border:1px solid var(--line-strong);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    padding:9px 10px;
+    border-radius:var(--radius);
+    outline:none;
+  }
+  input:focus, select:focus, textarea:focus{border-color:var(--amber);}
+  input[list]{}
+  .field-computed{
+    background:transparent;
+    border:1px dashed var(--line-strong);
+    padding:9px 10px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--ink-dim);
+    border-radius:var(--radius);
+  }
+  .checkbox-row{display:flex;align-items:center;gap:8px;margin-top:4px;}
+  .checkbox-row input{width:auto;}
+  .checkbox-row label{margin:0;text-transform:none;font-family:'Inter',sans-serif;font-size:13px;letter-spacing:0;color:var(--ink);}
+
+  button.btn{
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    font-size:13px;
+    font-weight:600;
+    background:var(--amber);
+    color:#1a1712;
+    border:none;
+    padding:11px 20px;
+    border-radius:var(--radius);
+    cursor:pointer;
+    transition:background .15s;
+  }
+  button.btn:hover{background:var(--amber-bright);}
+  button.btn.ghost{
+    background:none;
+    border:1px solid var(--line-strong);
+    color:var(--ink);
+  }
+  button.btn.ghost:hover{border-color:var(--amber);color:var(--amber-bright);}
+  button.btn.small{padding:6px 12px;font-size:11px;}
+  button.icon-btn{
+    background:none;border:1px solid var(--line-strong);color:var(--ink-dim);
+    border-radius:var(--radius); padding:4px 8px; cursor:pointer; font-size:11px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  button.icon-btn:hover{color:var(--bad);border-color:var(--bad);}
+  button.icon-btn.edit:hover{color:var(--amber-bright);border-color:var(--amber);}
+
+  /* ---------- Table ---------- */
+  .table-scroll{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:12.5px;}
+  th{
+    text-align:left;
+    font-family:'IBM Plex Mono',monospace;
+    text-transform:uppercase;
+    font-size:10px;
+    letter-spacing:0.07em;
+    color:var(--ink-dim);
+    padding:8px 10px;
+    border-bottom:1px solid var(--line-strong);
+    white-space:nowrap;
+  }
+  td{
+    padding:8px 10px;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+    color:var(--ink);
+  }
+  tr:hover td{background:rgba(255,255,255,0.02);}
+  .pill{
+    display:inline-block;
+    padding:2px 8px;
+    border-radius:20px;
+    font-size:10px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+  }
+  .pill.paid{background:rgba(127,168,117,0.15);color:var(--good);border:1px solid rgba(127,168,117,0.35);}
+  .pill.unpaid{background:rgba(194,90,78,0.15);color:var(--bad);border:1px solid rgba(194,90,78,0.35);}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .filters select, .filters input{max-width:180px;}
+  .empty-state{
+    text-align:center;padding:40px 20px;color:var(--ink-dim);
+    font-family:'IBM Plex Mono',monospace;font-size:13px;
+  }
+
+  /* ---------- Schools tab ---------- */
+  .school-row-edit{display:grid;grid-template-columns:1.4fr repeat(var(--origin-count,2), 0.8fr) 1fr auto;gap:8px;align-items:center;}
+
+  footer.app-footer{
+    text-align:center;padding:24px 20px 0;color:var(--ink-dim);
+    font-family:'IBM Plex Mono',monospace;font-size:11px;
+  }
+
+  ::selection{background:var(--amber);color:#1a1712;}
+  @media (max-width:640px){
+    .board-title{font-size:20px;}
+    .stat .value{font-size:22px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="board">
+  <div class="wrap">
+    <div class="board-top">
+      <div>
+        <div class="board-title">Ref <span>Ledger</span></div>
+        <div class="board-sub">2025&ndash;26 SEASON &middot; NCAAW / HS OFFICIATING</div>
+      </div>
+    </div>
+    <div class="stat-row" id="scoreboard"></div>
+  </div>
+</header>
+
+<nav class="tabs wrap" id="tabs">
+  <button data-tab="log" class="active">Season Log</button>
+  <button data-tab="add">Add Game</button>
+  <button data-tab="schools">Schools &amp; Travel</button>
+  <button data-tab="settings">Settings</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="tab active" id="tab-log">
+    <h2 class="section-title">Season Log <span class="hint" id="log-count-hint"></span></h2>
+    <div class="filters">
+      <select id="filter-paid">
+        <option value="all">All games</option>
+        <option value="paid">Paid only</option>
+        <option value="unpaid">Unpaid only</option>
+      </select>
+      <select id="filter-type">
+        <option value="all">All game types</option>
+      </select>
+      <select id="filter-sort">
+        <option value="date-desc">Newest first</option>
+        <option value="date-asc">Oldest first</option>
+      </select>
+    </div>
+    <div class="card table-scroll">
+      <table id="log-table">
+        <thead>
+          <tr>
+            <th>Date</th><th>School</th><th>Type</th><th>Pay</th><th>Status</th>
+            <th>From</th><th>Miles</th><th>Trip $</th><th>Hrs</th><th>Assignor</th><th>Note</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="log-body"></tbody>
+      </table>
+      <div class="empty-state" id="log-empty" style="display:none;">No games logged yet. Head to <strong>Add Game</strong> to start the season.</div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-add">
+    <h2 class="section-title">Add Game</h2>
+    <div class="card">
+      <form id="add-form">
+        <div class="grid">
+          <div>
+            <label for="f-date">Date</label>
+            <input type="date" id="f-date" required>
+          </div>
+          <div>
+            <label for="f-school">School</label>
+            <input type="text" id="f-school" list="school-list" placeholder="Start typing…" required autocomplete="off">
+            <datalist id="school-list"></datalist>
+          </div>
+          <div>
+            <label for="f-type">Game Type</label>
+            <select id="f-type" required></select>
+          </div>
+          <div>
+            <label for="f-pay">Pay ($)</label>
+            <input type="number" id="f-pay" step="0.01" required>
+          </div>
+          <div>
+            <label for="f-origin">Traveled From</label>
+            <select id="f-origin" required></select>
+          </div>
+          <div>
+            <label>Distance (mi, one-way)</label>
+            <div class="field-computed" id="f-distance-display">—</div>
+          </div>
+          <div>
+            <label>Gas Used (gal) / Trip Cost</label>
+            <div class="field-computed" id="f-tripcost-display">—</div>
+          </div>
+          <div>
+            <label for="f-hours">Time Spent (hrs)</label>
+            <input type="number" id="f-hours" step="0.1" placeholder="e.g. 4.5">
+          </div>
+          <div>
+            <label for="f-assignor">Assignor</label>
+            <input type="text" id="f-assignor" placeholder="e.g. Plas">
+          </div>
+          <div>
+            <label for="f-note">Note</label>
+            <input type="text" id="f-note" placeholder="Optional">
+          </div>
+        </div>
+        <div class="checkbox-row" style="margin-top:14px;">
+          <input type="checkbox" id="f-paid">
+          <label for="f-paid">Already paid</label>
+        </div>
+        <div class="grid" id="paid-date-wrap" style="display:none;margin-top:12px;max-width:220px;">
+          <div>
+            <label for="f-datepaid">Date Paid</label>
+            <input type="date" id="f-datepaid">
+          </div>
+        </div>
+        <div id="new-school-note" class="hint" style="display:none;margin-top:12px;color:var(--amber-bright);"></div>
+        <div style="margin-top:20px;display:flex;gap:10px;">
+          <button type="submit" class="btn">Log Game</button>
+          <button type="reset" class="btn ghost" id="clear-form">Clear</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-schools">
+    <h2 class="section-title">Schools &amp; Travel <span class="hint">Distances save automatically once entered</span></h2>
+    <div class="card">
+      <div class="table-scroll">
+        <table id="schools-table">
+          <thead><tr id="schools-head"></tr></thead>
+          <tbody id="schools-body"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <input type="text" id="new-school-name" placeholder="Add a school…" style="max-width:220px;">
+        <button class="btn small" id="add-school-btn">Add School</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-settings">
+    <h2 class="section-title">Settings</h2>
+    <div class="card">
+      <div class="grid" style="max-width:520px;">
+        <div>
+          <label for="s-mpg">Vehicle MPG</label>
+          <input type="number" id="s-mpg" step="0.1">
+        </div>
+        <div>
+          <label for="s-gas">Gas Price ($/gal)</label>
+          <input type="number" id="s-gas" step="0.01">
+        </div>
+      </div>
+      <button class="btn small" id="save-settings" style="margin-top:14px;">Save</button>
+    </div>
+
+    <h2 class="section-title" style="margin-top:28px;">Traveled-From Locations</h2>
+    <div class="card">
+      <div id="origins-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="new-origin-name" placeholder="e.g. HOME" style="max-width:220px;">
+        <button class="btn small" id="add-origin-btn">Add Location</button>
+      </div>
+    </div>
+
+    <h2 class="section-title" style="margin-top:28px;">Game Type Rates</h2>
+    <div class="card">
+      <div id="rates-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="new-rate-type" placeholder="Type (e.g. BV)" style="max-width:120px;">
+        <input type="number" id="new-rate-pay" placeholder="Pay $" step="0.01" style="max-width:100px;">
+        <button class="btn small" id="add-rate-btn">Add Rate</button>
+      </div>
+    </div>
+
+    <h2 class="section-title" style="margin-top:28px;">Backup &amp; Restore <span class="hint">save a copy to your computer, or pick up where you left off on another device</span></h2>
+    <div class="card">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <button class="btn small" id="export-json-btn">Download JSON Backup</button>
+        <label class="btn small ghost" for="import-json-input" style="cursor:pointer;">Upload JSON Backup</label>
+        <input type="file" id="import-json-input" accept="application/json,.json" style="display:none;">
+      </div>
+      <div id="backup-status" class="hint" style="margin-top:10px;"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer wrap">Ref Ledger &middot; data saved to this artifact only, on this device/account</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  const SEED_GAMES = [];
+  const SEED_SCHOOLS_RAW = [];
+  const SEED_RATES = [{"gameType": "Scrimmage", "pay": 42.5}, {"gameType": "BV", "pay": 85.0}, {"gameType": "GV", "pay": 85.0}, {"gameType": "BJV", "pay": 62.0}, {"gameType": "GJV", "pay": 62.0}, {"gameType": "BP", "pay": 95.0}, {"gameType": "GP", "pay": 95.0}, {"gameType": "NCAAW", "pay": 200.0}, {"gameType": "JUCO", "pay": 150.0}];
+  const DEFAULT_ORIGINS = ["Home"];
+
+  function buildSeedSchools(){
+    const out = {};
+    SEED_SCHOOLS_RAW.forEach(s=>{
+      out[s.school] = {
+        distances: { "HERMITAGE": s.distFromHermitage, "CONNEAUT LAKE": s.distFromConneautLake },
+        assignor: s.assignor || ""
+      };
+    });
+    return out;
+  }
+  function uidSeed(){ return 'g_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+  SEED_GAMES.forEach(g=>{ if(!g.id) g.id = uidSeed(); });
+
+  const DEFAULT_DATA = {
+    games: SEED_GAMES,
+    schools: buildSeedSchools(),
+    origins: DEFAULT_ORIGINS.slice(),
+    rates: SEED_RATES,
+    settings: { mpg: 20, gasPrice: 2.89 }
+  };
+
+  const STORAGE_KEY = "ledger-data";
+  let DATA = null;
+  let storageOk = true;
+
+  async function loadData(){
+    try{
+      const res = await window.storage.get(STORAGE_KEY, false);
+      if(res && res.value){
+        DATA = JSON.parse(res.value);
+        // backfill any missing fields for forward compatibility
+        if(!DATA.origins) DATA.origins = DEFAULT_ORIGINS.slice();
+        if(!DATA.settings) DATA.settings = { mpg:20, gasPrice:2.89 };
+        if(!DATA.rates) DATA.rates = SEED_RATES;
+        if(!DATA.schools) DATA.schools = {};
+        return;
+      }
+    }catch(e){
+      // key not found, or storage unavailable
+    }
+    // seed
+    DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    await saveData();
+  }
+
+  let saveTimer = null;
+  async function saveData(){
+    try{
+      const result = await window.storage.set(STORAGE_KEY, JSON.stringify(DATA), false);
+      storageOk = !!result;
+    }catch(e){
+      storageOk = false;
+      console.error("Storage save failed", e);
+    }
+  }
+
+  function uid(){ return 'g_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
+
+  // ---------------- Rendering ----------------
+
+  function fmtMoney(n){
+    if(n===null||n===undefined||isNaN(n)) return "$0.00";
+    return "$" + Number(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+  function fmtNum(n, d){
+    if(n===null||n===undefined||isNaN(n)) return "—";
+    return Number(n).toLocaleString('en-US', {minimumFractionDigits:d, maximumFractionDigits:d});
+  }
+
+  function computeTotals(){
+    const games = DATA.games;
+    let totalPay=0, totalTrip=0, totalHours=0, paidCount=0, unpaidAmt=0, unpaidCount=0, daysToPaySum=0, daysToPayN=0;
+    games.forEach(g=>{
+      const pay = Number(g.pay)||0;
+      const trip = Number(g.tripCost)||0;
+      totalPay += pay;
+      totalTrip += trip;
+      totalHours += Number(g.timeSpent)||0;
+      if(g.paid){
+        paidCount++;
+        if(g.date && g.datePaid){
+          const d1 = new Date(g.date), d2 = new Date(g.datePaid);
+          const diff = Math.round((d2-d1)/(1000*60*60*24));
+          if(!isNaN(diff) && diff>=0){ daysToPaySum += diff; daysToPayN++; }
+        }
+      } else {
+        unpaidCount++;
+        unpaidAmt += pay;
+      }
+    });
+    const net = totalPay - totalTrip;
+    const perHour = totalHours>0 ? net/totalHours : 0;
+    const avgDaysToPay = daysToPayN>0 ? daysToPaySum/daysToPayN : null;
+    return { count: games.length, totalPay, totalTrip, net, totalHours, perHour, unpaidCount, unpaidAmt, avgDaysToPay };
+  }
+
+  function renderScoreboard(){
+    const t = computeTotals();
+    const board = document.getElementById('scoreboard');
+    board.innerHTML = `
+      <div class="stat"><div class="label">Games</div><div class="value">${t.count}</div><div class="sub">this season</div></div>
+      <div class="stat"><div class="label">Total Pay</div><div class="value">${fmtMoney(t.totalPay)}</div><div class="sub">gross</div></div>
+      <div class="stat"><div class="label">Trip Cost</div><div class="value bad">${fmtMoney(t.totalTrip)}</div><div class="sub">gas, all trips</div></div>
+      <div class="stat"><div class="label">Net</div><div class="value amber">${fmtMoney(t.net)}</div><div class="sub">after gas</div></div>
+      <div class="stat"><div class="label">$ / Hour</div><div class="value">${fmtMoney(t.perHour)}</div><div class="sub">${fmtNum(t.totalHours,1)} hrs total</div></div>
+      <div class="stat"><div class="label">Unpaid</div><div class="value ${t.unpaidCount>0?'bad':'good'}">${t.unpaidCount}</div><div class="sub">${fmtMoney(t.unpaidAmt)} outstanding</div></div>
+    `;
+  }
+
+  function populateGameTypeFilter(){
+    const sel = document.getElementById('filter-type');
+    const current = sel.value;
+    const types = Array.from(new Set(DATA.games.map(g=>g.gameType).filter(Boolean))).sort();
+    sel.innerHTML = '<option value="all">All game types</option>' + types.map(t=>`<option value="${t}">${t}</option>`).join('');
+    sel.value = types.includes(current) ? current : 'all';
+  }
+
+  function renderLog(){
+    populateGameTypeFilter();
+    const paidFilter = document.getElementById('filter-paid').value;
+    const typeFilter = document.getElementById('filter-type').value;
+    const sortMode = document.getElementById('filter-sort').value;
+
+    let rows = DATA.games.slice();
+    if(paidFilter==='paid') rows = rows.filter(g=>g.paid);
+    if(paidFilter==='unpaid') rows = rows.filter(g=>!g.paid);
+    if(typeFilter!=='all') rows = rows.filter(g=>g.gameType===typeFilter);
+
+    rows.sort((a,b)=>{
+      const da = a.date||'', db = b.date||'';
+      return sortMode==='date-asc' ? da.localeCompare(db) : db.localeCompare(da);
+    });
+
+    const body = document.getElementById('log-body');
+    const empty = document.getElementById('log-empty');
+    document.getElementById('log-count-hint').textContent = `${rows.length} shown`;
+
+    if(rows.length===0){
+      body.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    body.innerHTML = rows.map(g=>{
+      const statusPill = g.paid
+        ? `<span class="pill paid">Paid</span>`
+        : `<span class="pill unpaid">Unpaid</span>`;
+      return `<tr data-id="${g.id}">
+        <td>${g.date||'—'}</td>
+        <td>${g.school||'—'}</td>
+        <td>${g.gameType||'—'}</td>
+        <td>${fmtMoney(g.pay)}</td>
+        <td>${statusPill}</td>
+        <td>${g.origin||'—'}</td>
+        <td>${g.distance!=null?fmtNum(g.distance,1):'—'}</td>
+        <td>${g.tripCost!=null?fmtMoney(g.tripCost):'—'}</td>
+        <td>${g.timeSpent!=null?fmtNum(g.timeSpent,1):'—'}</td>
+        <td>${g.assignor||'—'}</td>
+        <td>${g.note||''}</td>
+        <td>
+          <button class="icon-btn edit" data-action="toggle-paid" data-id="${g.id}" title="Toggle paid">${g.paid?'Mark Unpaid':'Mark Paid'}</button>
+          <button class="icon-btn" data-action="delete-game" data-id="${g.id}" title="Delete">✕</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderSchoolOptions(){
+    const list = document.getElementById('school-list');
+    list.innerHTML = Object.keys(DATA.schools).sort().map(s=>`<option value="${s}">`).join('');
+  }
+
+  function renderOriginSelect(){
+    const sel = document.getElementById('f-origin');
+    const current = sel.value;
+    sel.innerHTML = DATA.origins.map(o=>`<option value="${o}">${o}</option>`).join('');
+    if(DATA.origins.includes(current)) sel.value = current;
+  }
+
+  function renderGameTypeSelect(){
+    const sel = document.getElementById('f-type');
+    const current = sel.value;
+    sel.innerHTML = DATA.rates.map(r=>`<option value="${r.gameType}">${r.gameType} — $${r.pay}</option>`).join('');
+    if(DATA.rates.some(r=>r.gameType===current)) sel.value = current;
+  }
+
+  function updateDistanceDisplay(){
+    const school = document.getElementById('f-school').value.trim();
+    const origin = document.getElementById('f-origin').value;
+    const distDisplay = document.getElementById('f-distance-display');
+    const tripDisplay = document.getElementById('f-tripcost-display');
+    const noteEl = document.getElementById('new-school-note');
+
+    const rec = DATA.schools[school];
+    if(school && rec && rec.distances && rec.distances[origin]!=null){
+      const dist = Number(rec.distances[origin]);
+      const gas = dist / (Number(DATA.settings.mpg)||20);
+      const cost = gas * (Number(DATA.settings.gasPrice)||0);
+      distDisplay.textContent = `${fmtNum(dist,1)} mi`;
+      tripDisplay.textContent = `${fmtNum(gas,2)} gal · ${fmtMoney(cost)}`;
+      distDisplay.dataset.value = dist;
+      noteEl.style.display = 'none';
+      if(rec.assignor && !document.getElementById('f-assignor').dataset.userEdited){
+        document.getElementById('f-assignor').value = rec.assignor;
+      }
+    } else if(school){
+      distDisplay.textContent = 'New — enter miles below';
+      distDisplay.dataset.value = '';
+      tripDisplay.textContent = '—';
+      noteEl.style.display = 'block';
+      noteEl.textContent = `"${school}" isn't in your Schools list yet for ${origin}. Log this game, then add its distance on the Schools & Travel tab (or type it in below).`;
+    } else {
+      distDisplay.textContent = '—';
+      tripDisplay.textContent = '—';
+      noteEl.style.display = 'none';
+    }
+  }
+
+  // manual distance override input (created dynamically when school is new)
+  function ensureManualDistanceField(){
+    let el = document.getElementById('f-distance-manual');
+    return el;
+  }
+
+  function renderSchoolsTab(){
+    const head = document.getElementById('schools-head');
+    const body = document.getElementById('schools-body');
+    const origins = DATA.origins;
+    head.innerHTML = `<th>School</th>${origins.map(o=>`<th>${o} (mi)</th>`).join('')}<th>Assignor</th><th></th>`;
+
+    const names = Object.keys(DATA.schools).sort();
+    if(names.length===0){
+      body.innerHTML = `<tr><td colspan="${origins.length+3}" style="color:var(--ink-dim);">No schools saved yet.</td></tr>`;
+      return;
+    }
+    body.innerHTML = names.map(name=>{
+      const rec = DATA.schools[name];
+      const distCells = origins.map(o=>{
+        const v = rec.distances && rec.distances[o]!=null ? rec.distances[o] : '';
+        return `<td><input type="number" step="0.1" style="width:80px;" data-school="${name}" data-origin="${o}" class="school-dist-input" value="${v}"></td>`;
+      }).join('');
+      return `<tr>
+        <td>${name}</td>
+        ${distCells}
+        <td><input type="text" style="width:110px;" data-school="${name}" class="school-assignor-input" value="${rec.assignor||''}"></td>
+        <td><button class="icon-btn" data-action="delete-school" data-school="${name}">✕</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderOriginsSettings(){
+    const wrap = document.getElementById('origins-list');
+    wrap.innerHTML = DATA.origins.map(o=>`
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;flex:1;">${o}</span>
+        <button class="icon-btn" data-action="delete-origin" data-origin="${o}">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function renderRatesSettings(){
+    const wrap = document.getElementById('rates-list');
+    wrap.innerHTML = DATA.rates.map(r=>`
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;width:80px;">${r.gameType}</span>
+        <input type="number" step="0.01" style="width:100px;" class="rate-pay-input" data-type="${r.gameType}" value="${r.pay}">
+        <button class="icon-btn" data-action="delete-rate" data-type="${r.gameType}" style="margin-left:auto;">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function renderSettingsForm(){
+    document.getElementById('s-mpg').value = DATA.settings.mpg;
+    document.getElementById('s-gas').value = DATA.settings.gasPrice;
+  }
+
+  function renderAll(){
+    renderScoreboard();
+    renderLog();
+    renderSchoolOptions();
+    renderOriginSelect();
+    renderGameTypeSelect();
+    renderSchoolsTab();
+    renderOriginsSettings();
+    renderRatesSettings();
+    renderSettingsForm();
+    updateDistanceDisplay();
+  }
+
+  // ---------------- Event wiring ----------------
+
+  document.getElementById('tabs').addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-tab]');
+    if(!btn) return;
+    document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('active'));
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
+
+  document.getElementById('filter-paid').addEventListener('change', renderLog);
+  document.getElementById('filter-type').addEventListener('change', renderLog);
+  document.getElementById('filter-sort').addEventListener('change', renderLog);
+
+  document.getElementById('log-body').addEventListener('click', async (e)=>{
+    const btn = e.target.closest('button[data-action]');
+    if(!btn) return;
+    const id = btn.dataset.id;
+    const game = DATA.games.find(g=>g.id===id);
+    if(!game) return;
+    if(btn.dataset.action==='toggle-paid'){
+      game.paid = !game.paid;
+      if(game.paid && !game.datePaid){
+        game.datePaid = new Date().toISOString().slice(0,10);
+      }
+      await saveData();
+      renderAll();
+    } else if(btn.dataset.action==='delete-game'){
+      if(confirm(`Remove ${game.school} on ${game.date} from the log?`)){
+        DATA.games = DATA.games.filter(g=>g.id!==id);
+        await saveData();
+        renderAll();
+      }
+    }
+  });
+
+  document.getElementById('f-school').addEventListener('input', updateDistanceDisplay);
+  document.getElementById('f-origin').addEventListener('change', updateDistanceDisplay);
+  document.getElementById('f-assignor').addEventListener('input', function(){ this.dataset.userEdited = '1'; });
+
+  document.getElementById('f-type').addEventListener('change', function(){
+    const rate = DATA.rates.find(r=>r.gameType===this.value);
+    if(rate) document.getElementById('f-pay').value = rate.pay;
+  });
+
+  document.getElementById('f-paid').addEventListener('change', function(){
+    document.getElementById('paid-date-wrap').style.display = this.checked ? 'grid' : 'none';
+    if(this.checked && !document.getElementById('f-datepaid').value){
+      document.getElementById('f-datepaid').value = new Date().toISOString().slice(0,10);
+    }
+  });
+
+  document.getElementById('add-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const school = document.getElementById('f-school').value.trim();
+    const origin = document.getElementById('f-origin').value;
+    const gameType = document.getElementById('f-type').value;
+    const pay = parseFloat(document.getElementById('f-pay').value) || 0;
+    const date = document.getElementById('f-date').value;
+    const hours = document.getElementById('f-hours').value ? parseFloat(document.getElementById('f-hours').value) : null;
+    const assignor = document.getElementById('f-assignor').value.trim();
+    const note = document.getElementById('f-note').value.trim();
+    const paid = document.getElementById('f-paid').checked;
+    const datePaid = paid ? (document.getElementById('f-datepaid').value || new Date().toISOString().slice(0,10)) : null;
+
+    let rec = DATA.schools[school];
+    let distance = rec && rec.distances ? rec.distances[origin] : null;
+
+    if(distance==null){
+      const manualStr = prompt(`How many miles from ${origin} to ${school}? (one-way)`);
+      const manual = parseFloat(manualStr);
+      if(manualStr===null){
+        return; // user cancelled
+      }
+      distance = isNaN(manual) ? 0 : manual;
+      if(!DATA.schools[school]) DATA.schools[school] = { distances:{}, assignor: assignor||'' };
+      if(!DATA.schools[school].distances) DATA.schools[school].distances = {};
+      DATA.schools[school].distances[origin] = distance;
+      if(assignor && !DATA.schools[school].assignor) DATA.schools[school].assignor = assignor;
+    } else if(assignor && rec && !rec.assignor){
+      rec.assignor = assignor;
+    }
+
+    const mpg = Number(DATA.settings.mpg)||20;
+    const gasPrice = Number(DATA.settings.gasPrice)||0;
+    const gasUsed = distance / mpg;
+    const tripCost = gasUsed * gasPrice;
+
+    const game = {
+      id: uid(), date, school, gameType, pay, paid, datePaid, note,
+      origin, distance, gasUsed, tripCost, timeSpent: hours, assignor
+    };
+    DATA.games.push(game);
+    await saveData();
+
+    e.target.reset();
+    document.getElementById('f-assignor').dataset.userEdited = '';
+    document.getElementById('paid-date-wrap').style.display = 'none';
+    renderAll();
+    document.querySelector('#tabs button[data-tab="log"]').click();
+  });
+
+  document.getElementById('schools-body').addEventListener('change', async (e)=>{
+    const t = e.target;
+    if(t.classList.contains('school-dist-input')){
+      const school = t.dataset.school, origin = t.dataset.origin;
+      const val = parseFloat(t.value);
+      if(!DATA.schools[school].distances) DATA.schools[school].distances = {};
+      DATA.schools[school].distances[origin] = isNaN(val) ? null : val;
+      await saveData();
+    } else if(t.classList.contains('school-assignor-input')){
+      const school = t.dataset.school;
+      DATA.schools[school].assignor = t.value.trim();
+      await saveData();
+    }
+  });
+
+  document.getElementById('schools-body').addEventListener('click', async (e)=>{
+    const btn = e.target.closest('button[data-action="delete-school"]');
+    if(!btn) return;
+    const school = btn.dataset.school;
+    if(confirm(`Remove ${school} from Schools & Travel? (Existing logged games keep their saved distance.)`)){
+      delete DATA.schools[school];
+      await saveData();
+      renderAll();
+    }
+  });
+
+  document.getElementById('add-school-btn').addEventListener('click', async ()=>{
+    const input = document.getElementById('new-school-name');
+    const name = input.value.trim();
+    if(!name) return;
+    if(!DATA.schools[name]) DATA.schools[name] = { distances:{}, assignor:'' };
+    input.value='';
+    await saveData();
+    renderAll();
+  });
+
+  document.getElementById('add-origin-btn').addEventListener('click', async ()=>{
+    const input = document.getElementById('new-origin-name');
+    const name = input.value.trim().toUpperCase();
+    if(!name || DATA.origins.includes(name)) return;
+    DATA.origins.push(name);
+    input.value='';
+    await saveData();
+    renderAll();
+  });
+
+  document.getElementById('origins-list').addEventListener('click', async (e)=>{
+    const btn = e.target.closest('button[data-action="delete-origin"]');
+    if(!btn) return;
+    const origin = btn.dataset.origin;
+    if(DATA.origins.length<=1){ alert("Keep at least one traveled-from location."); return; }
+    if(confirm(`Remove "${origin}" as a traveled-from location?`)){
+      DATA.origins = DATA.origins.filter(o=>o!==origin);
+      await saveData();
+      renderAll();
+    }
+  });
+
+  document.getElementById('rates-list').addEventListener('change', async (e)=>{
+    if(!e.target.classList.contains('rate-pay-input')) return;
+    const type = e.target.dataset.type;
+    const val = parseFloat(e.target.value);
+    const r = DATA.rates.find(r=>r.gameType===type);
+    if(r) r.pay = isNaN(val)?0:val;
+    await saveData();
+  });
+
+  document.getElementById('rates-list').addEventListener('click', async (e)=>{
+    const btn = e.target.closest('button[data-action="delete-rate"]');
+    if(!btn) return;
+    const type = btn.dataset.type;
+    if(confirm(`Remove rate for "${type}"?`)){
+      DATA.rates = DATA.rates.filter(r=>r.gameType!==type);
+      await saveData();
+      renderAll();
+    }
+  });
+
+  document.getElementById('add-rate-btn').addEventListener('click', async ()=>{
+    const typeInput = document.getElementById('new-rate-type');
+    const payInput = document.getElementById('new-rate-pay');
+    const type = typeInput.value.trim();
+    const pay = parseFloat(payInput.value);
+    if(!type || isNaN(pay)) return;
+    const existing = DATA.rates.find(r=>r.gameType===type);
+    if(existing){ existing.pay = pay; } else { DATA.rates.push({gameType:type, pay}); }
+    typeInput.value=''; payInput.value='';
+    await saveData();
+    renderAll();
+  });
+
+  document.getElementById('export-json-btn').addEventListener('click', ()=>{
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      app: 'ref-ledger',
+      version: 1,
+      data: DATA
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0,10);
+    a.href = url;
+    a.download = `ref-ledger-backup-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    const status = document.getElementById('backup-status');
+    status.textContent = `Downloaded backup with ${DATA.games.length} games.`;
+    status.style.color = 'var(--good)';
+  });
+
+  document.getElementById('import-json-input').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    const status = document.getElementById('backup-status');
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = async (evt)=>{
+      let parsed;
+      try{
+        parsed = JSON.parse(evt.target.result);
+      }catch(err){
+        status.textContent = 'That file is not valid JSON.';
+        status.style.color = 'var(--bad)';
+        e.target.value = '';
+        return;
+      }
+      // accept either the wrapped {data:{...}} export format or a raw data object
+      const incoming = (parsed && parsed.data && parsed.data.games) ? parsed.data : parsed;
+      if(!incoming || !Array.isArray(incoming.games) || typeof incoming.schools !== 'object'){
+        status.textContent = 'That file doesn\'t look like a Ref Ledger backup.';
+        status.style.color = 'var(--bad)';
+        e.target.value = '';
+        return;
+      }
+      const gameCount = incoming.games.length;
+      const currentCount = DATA.games.length;
+      const proceed = confirm(`Replace current data (${currentCount} games) with this backup (${gameCount} games)? This can't be undone.`);
+      if(!proceed){
+        e.target.value = '';
+        return;
+      }
+      DATA = {
+        games: incoming.games || [],
+        schools: incoming.schools || {},
+        origins: incoming.origins || DEFAULT_ORIGINS.slice(),
+        rates: incoming.rates || SEED_RATES,
+        settings: incoming.settings || { mpg:20, gasPrice:2.89 }
+      };
+      DATA.games.forEach(g=>{ if(!g.id) g.id = uidSeed(); });
+      await saveData();
+      renderAll();
+      status.textContent = `Restored ${DATA.games.length} games from backup.`;
+      status.style.color = 'var(--good)';
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById('save-settings').addEventListener('click', async ()=>{
+    const mpg = parseFloat(document.getElementById('s-mpg').value);
+    const gas = parseFloat(document.getElementById('s-gas').value);
+    DATA.settings.mpg = isNaN(mpg) ? DATA.settings.mpg : mpg;
+    DATA.settings.gasPrice = isNaN(gas) ? DATA.settings.gasPrice : gas;
+    await saveData();
+    renderAll();
+  });
+
+  // ---------------- Init ----------------
+  (async function init(){
+    await loadData();
+    // default date field to today
+    document.getElementById('f-date').value = new Date().toISOString().slice(0,10);
+    renderAll();
+    if(!storageOk){
+      console.warn("Persistent storage unavailable — data will not survive a reload.");
+    }
+  })();
+
+})();
+</script>
+</body>
+</html>
